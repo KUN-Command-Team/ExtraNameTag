@@ -22,6 +22,8 @@ import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Extranametag.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class RenderExtraNametag {
+    private static final float VANILLA_LINE_STEP = 9.0F * 1.15F;
+
     private RenderExtraNametag() {}
 
     @SubscribeEvent
@@ -48,12 +50,12 @@ public final class RenderExtraNametag {
         }
 
         for (int i = 0; i < lines.size(); i++) {
-            int yPixels = -(i + 1 + baseLineOffset) * (Minecraft.getInstance().font.lineHeight + 1);
+            float yPixels = -(i + 1 + baseLineOffset) * VANILLA_LINE_STEP;
             drawLineLikeVanilla(event, Component.literal(lines.get(i)), yPixels);
         }
     }
 
-    private static void drawLineLikeVanilla(RenderNameTagEvent event, Component text, int yPixels) {
+    private static void drawLineLikeVanilla(RenderNameTagEvent event, Component text, float yPixels) {
         Entity entity = event.getEntity();
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
