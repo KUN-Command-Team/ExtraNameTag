@@ -49,10 +49,17 @@ public final class RenderExtraNametag {
             }
         }
 
+        int nameLineOffset = event.getContent().getString().isEmpty() ? 0 : 1;
+
         for (int i = 0; i < lines.size(); i++) {
-            float yPixels = -(i + 1 + baseLineOffset) * VANILLA_LINE_STEP;
-            drawLineLikeVanilla(event, Component.literal(lines.get(i)), yPixels);
+            float yPixels = -(i + nameLineOffset + baseLineOffset) * VANILLA_LINE_STEP;
+            String text = lines.get(i);
+            if (i == 0) {
+                text = text + " nameLineOffset=" + nameLineOffset;
+            }
+            drawLineLikeVanilla(event, Component.literal(text), yPixels);
         }
+
     }
 
     private static void drawLineLikeVanilla(RenderNameTagEvent event, Component text, float yPixels) {
