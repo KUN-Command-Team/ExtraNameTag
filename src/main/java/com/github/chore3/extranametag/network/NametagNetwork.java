@@ -1,6 +1,7 @@
 package com.github.chore3.extranametag.network;
 
 import com.github.chore3.extranametag.Extranametag;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -9,6 +10,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public class NametagNetwork {
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
@@ -27,10 +29,10 @@ public class NametagNetwork {
         );
     }
 
-    public static void sendResult(ServerPlayer player, boolean success) {
+    public static void sendResult(ServerPlayer player, CompoundTag tag, UUID entityId) {
         CHANNEL.send(
                 PacketDistributor.PLAYER.with(() -> player),
-                new NametagStackPacket(success)
+                new NametagStackPacket(tag, entityId)
         );
     }
 }

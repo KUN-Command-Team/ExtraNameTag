@@ -1,34 +1,41 @@
 package com.github.chore3.extranametag.network;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
-import java.util.function.Consumer;
+
+import java.util.UUID;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class NametagStackPacket {
-    private final boolean success;
-    private static Consumer<Boolean> clientHandler = __ -> {};
+    private final CompoundTag tag;
+    private final UUID entityId;
+    private static BiConsumer<UUID, CompoundTag> clientHandler = (__, ____) -> {};
 
-    public static void setClientHandler(Consumer<Boolean> handler) {
+    public static void setClientHandler(BiConsumer<UUID, CompoundTag> handler) {
         clientHandler = handler;
     }
 
-    public NametagStackPacket(boolean success) {
-        this.success = success;
+    public NametagStackPacket(CompoundTag tag, UUID entityId) {
+        this.tag = tag;
+        this.entityId = entityId;
     }
 
     public static void encode(NametagStackPacket packet, FriendlyByteBuf buf) {
-        buf.writeBoolean(packet.success);
+        buf.writeNbt(packet.tag);
+        buf.writeUUID(packet.entityId);
     }
 
     public static NametagStackPacket decode(FriendlyByteBuf buf) {
-        return new NametagStackPacket(buf.readBoolean());
+        return new NametagStackPacket(buf.readNbt(), buf.readUUID());
     }
 
     public static void handle(NametagStackPacket packet, Supplier<NetworkEvent.Context> ctx) {
         NetworkEvent.Context context = ctx.get();
-        boolean success = packet.success;
-        context.enqueueWork(() -> clientHandler.accept(success));
+        CompoundTag tag = packet.tag;
+        UUID entityId = packet.entityId;
+        context.enqueueWork(() -> clientHandler.accept(entityId, tag));
         context.setPacketHandled(true);
     }
 }
