@@ -1,9 +1,11 @@
 package com.github.chore3.extranametag;
 
+import com.github.chore3.extranametag.network.NametagNetwork;
 import com.github.chore3.extranametag.registry.ExtranametagRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod("extranametag")
@@ -13,7 +15,12 @@ public class Extranametag {
     @SuppressWarnings("removal")
     public Extranametag() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        modEventBus.addListener(this::onCommonSetup);
         modEventBus.addListener(ExtranametagRegistry::onRegisterCaps);
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    private void onCommonSetup(FMLCommonSetupEvent event) {
+        event.enqueueWork(NametagNetwork::register);
     }
 }
