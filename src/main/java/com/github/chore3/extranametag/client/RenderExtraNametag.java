@@ -5,14 +5,18 @@ import com.github.chore3.extranametag.registry.NametagClientState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
+import net.minecraft.world.scores.Team;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.RenderNameTagEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
@@ -30,6 +34,9 @@ public final class RenderExtraNametag {
     public static void onRenderNameTag(RenderNameTagEvent event) {
         Entity entity = event.getEntity();
         double distanceSqr = Minecraft.getInstance().getEntityRenderDispatcher().distanceToSqr(entity);
+        if (!shouldRenderExtraNameTag(event, distanceSqr)) {
+            return;
+        }
         if (!ForgeHooksClient.isNameplateInRenderDistance(entity, distanceSqr)) {
             return;
         }
@@ -49,17 +56,65 @@ public final class RenderExtraNametag {
             }
         }
 
-        int nameLineOffset = event.getContent().getString().isEmpty() ? 0 : 1;
+        int nameLineOffset = 1;
 
         for (int i = 0; i < lines.size(); i++) {
             float yPixels = -(i + nameLineOffset + baseLineOffset) * VANILLA_LINE_STEP;
-            String text = lines.get(i);
-            if (i == 0) {
-                text = text + " nameLineOffset=" + nameLineOffset;
-            }
-            drawLineLikeVanilla(event, Component.literal(text), yPixels);
+            drawLineLikeVanilla(event, Component.literal(lines.get(i)), yPixels);
         }
 
+    }
+
+    private static boolean shouldRenderExtraNameTag(RenderNameTagEvent event, double distanceSqr) {
+        Event.Result result = event.getResult();
+        if (result == Event.Result.DENY) {
+            return false;
+        }
+        if (result == Event.Result.ALLOW) {
+            return true;
+        }
+
+        Entity entity = event.getEntity();
+        if (entity instanceof LivingEntity livingEntity) {
+            return shouldShowName(livingEntity, distanceSqr);
+        }
+        return entity.shouldShowName() && entity.hasCustomName();
+    }
+
+    private static boolean shouldShowName(LivingEntity entity, double distanceSqr) {
+        float max = entity.isDiscrete() ? 32.0F : 64.0F;
+        if (distanceSqr >= (double) (max * max)) {
+            return false;
+        }
+
+        Minecraft minecraft = Minecraft.getInstance();
+        LocalPlayer localPlayer = minecraft.player;
+        if (localPlayer == null) {
+            return false;
+        }
+
+        boolean visible = !entity.isInvisibleTo(localPlayer);
+        if (entity != localPlayer) {
+            Team team = entity.getTeam();
+            Team localTeam = localPlayer.getTeam();
+            if (team != null) {
+                Team.Visibility visibility = team.getNameTagVisibility();
+                switch (visibility) {
+                    case ALWAYS:
+                        return visible;
+                    case NEVER:
+                        return false;
+                    case HIDE_FOR_OTHER_TEAMS:
+                        return localTeam == null ? visible : team.isAlliedTo(localTeam) && (team.canSeeFriendlyInvisibles() || visible);
+                    case HIDE_FOR_OWN_TEAM:
+                        return localTeam == null ? visible : !team.isAlliedTo(localTeam) && visible;
+                    default:
+                        return true;
+                }
+            }
+        }
+
+        return Minecraft.renderNames() && entity != minecraft.getCameraEntity() && visible && !entity.isVehicle();
     }
 
     private static void drawLineLikeVanilla(RenderNameTagEvent event, Component text, float yPixels) {
