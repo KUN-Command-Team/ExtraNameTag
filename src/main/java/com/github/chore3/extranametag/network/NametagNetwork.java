@@ -4,6 +4,7 @@ import com.github.chore3.extranametag.Extranametag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -32,6 +33,13 @@ public class NametagNetwork {
     public static void sendResult(ServerPlayer player, CompoundTag tag, UUID entityId) {
         CHANNEL.send(
                 PacketDistributor.PLAYER.with(() -> player),
+                new NametagStackPacket(tag, entityId)
+        );
+    }
+
+    public static void sendResultToTracking(Entity entity, CompoundTag tag, UUID entityId) {
+        CHANNEL.send(
+                PacketDistributor.TRACKING_ENTITY.with(() -> entity),
                 new NametagStackPacket(tag, entityId)
         );
     }
