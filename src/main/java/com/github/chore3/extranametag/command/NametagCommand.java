@@ -28,35 +28,32 @@ public class NametagCommand {
     );
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        var nametag = Commands.literal("nametag")
-                .requires(source -> source.hasPermission(2));
-
         var push = Commands.literal("push")
-                .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("name", StringArgumentType.greedyString())
-                                .executes(ctx -> executePush(
-                                        ctx.getSource(),
-                                        EntityArgument.getEntities(ctx, "targets"),
-                                        StringArgumentType.getString(ctx, "name")
-                                ))));
+                .then(Commands.argument("name", StringArgumentType.greedyString())
+                        .executes(ctx -> executePush(
+                                ctx.getSource(),
+                                EntityArgument.getEntities(ctx, "targets"),
+                                StringArgumentType.getString(ctx, "name")
+                        )));
 
         var pop = Commands.literal("pop")
-                .then(Commands.argument("targets", EntityArgument.entities())
-                        .executes(ctx -> executePop(
-                                ctx.getSource(),
-                                EntityArgument.getEntities(ctx, "targets")
-                        )));
+                .executes(ctx -> executePop(
+                        ctx.getSource(),
+                        EntityArgument.getEntities(ctx, "targets")
+                ));
 
         var clear = Commands.literal("clear")
-                .then(Commands.argument("targets", EntityArgument.entities())
-                        .executes(ctx -> executeClear(
-                                ctx.getSource(),
-                                EntityArgument.getEntities(ctx, "targets")
-                        )));
+                .executes(ctx -> executeClear(
+                        ctx.getSource(),
+                        EntityArgument.getEntities(ctx, "targets")
+                ));
 
-        nametag.then(push)
-                .then(pop)
-                .then(clear);
+        var nametag = Commands.literal("nametag")
+                .requires(source -> source.hasPermission(2))
+                .then(Commands.argument("targets", EntityArgument.entities())
+                        .then(push)
+                        .then(pop)
+                        .then(clear));
 
         dispatcher.register(nametag);
     }
