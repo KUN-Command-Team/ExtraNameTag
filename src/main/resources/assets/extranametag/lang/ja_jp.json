@@ -1,0 +1,11 @@
+{
+  "commands.nametag.push.failed": "対象は既に最大数の名前を持っているか、名前を追加できません",
+  "commands.nametag.push.success.single": "%2$sに名前「%1$s」を追加しました",
+  "commands.nametag.push.success.multiple": "%2$s体のエンティティに名前「%1$s」を追加しました",
+  "commands.nametag.pop.failed": "対象は削除する名前を持っていません",
+  "commands.nametag.pop.success.single": "%sから名前を削除しました",
+  "commands.nametag.pop.success.multiple": "%s体のエンティティから名前を削除しました",
+  "commands.nametag.clear.failed": "対象から名前をクリアできませんでした",
+  "commands.nametag.clear.success.single": "%sの名前をクリアしました",
+  "commands.nametag.clear.success.multiple": "%s体のエンティティの名前をクリアしました"
+}
