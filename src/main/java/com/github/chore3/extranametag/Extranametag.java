@@ -4,7 +4,7 @@ import com.github.chore3.extranametag.command.NametagCommand;
 import com.github.chore3.extranametag.network.NametagNetwork;
 import com.github.chore3.extranametag.registry.ExtranametagRegistry;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -28,7 +28,7 @@ public class Extranametag {
     }
 
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event){
-        NametagCommand.register(event.getServer().getCommands().getDispatcher());
+    public void onRegisterCommands(RegisterCommandsEvent event) {
+        NametagCommand.register(event.getDispatcher());
     }
 }
