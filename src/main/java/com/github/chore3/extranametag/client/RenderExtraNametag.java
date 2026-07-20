@@ -43,10 +43,6 @@ public final class RenderExtraNametag {
 
         List<String> lines = new ArrayList<>(NametagClientState.getLines(entity.getUUID()));
 
-        lines.clear();
-        lines.add("apple");
-        lines.add("banana");
-
         int baseLineOffset = 0;
         if (entity instanceof Player player && distanceSqr < 100.0D) {
             Scoreboard scoreboard = player.getScoreboard();

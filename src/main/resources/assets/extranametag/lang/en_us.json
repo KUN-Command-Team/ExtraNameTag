@@ -1,0 +1,11 @@
+{
+  "commands.nametag.push.failed": "Target either already has the maximum names or cannot add a name",
+  "commands.nametag.push.success.single": "Added name '%s' to %s",
+  "commands.nametag.push.success.multiple": "Added name '%s' to %s entities",
+  "commands.nametag.pop.failed": "Target does not have a name to remove",
+  "commands.nametag.pop.success.single": "Removed name from %s",
+  "commands.nametag.pop.success.multiple": "Removed name from %s entities",
+  "commands.nametag.clear.failed": "Target does not have names to clear",
+  "commands.nametag.clear.success.single": "Cleared names from %s",
+  "commands.nametag.clear.success.multiple": "Cleared names from %s entities"
+}
